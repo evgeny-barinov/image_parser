@@ -1,0 +1,16 @@
+{
+    "name" : "zbarinov/image_parser_test",
+    "version" : "1.0.0",
+    "require": {
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "require-dev" : {
+        "phpunit/phpunit": "~5"
+    },
+    "autoload": {
+        "psr-4": { "Barya\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Barya\\Tests\\": "tests/" }
+    }
+}
