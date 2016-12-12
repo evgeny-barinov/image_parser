@@ -5,25 +5,33 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
-class MetaStorageMySql implements ImageMetaStorageInterface
+class MetaStorageMySql implements MetaStorageInterface
 {
     protected $connection;
 
     protected $table = 'images';
 
-    public function __construct($dsn, $username, $password)
+    public function __construct(\PDO $connection)
     {
-        $this->connection = new \PDO($dsn, $username, $password);
+        $this->connection = $connection;
     }
 
     public function save(ImageInterface $image)
     {
-        $query = "INSERT INTO {$this->table} (name, original_name, content_type) VALUES (?, ?, ?)";
+        $query = "INSERT INTO {$this->table} (name, original_name, uri, content_type) VALUES (?, ?, ?, ?)";
         $stmt = $this->connection->prepare($query);
-        return $stmt->execute([$image->getName(), $image->getOriginalName(), $image->getMime()]);
+
+        $data = [$image->getName(), $image->getOriginalName(), $image->getUri(), $image->getMime()];
+        foreach ($data as $value) {
+            if (empty($value)) {
+                throw new StorageException('Image is not valid');
+            }
+        }
+
+        return $stmt->execute($data);
     }
 
     public function saveAll($images)

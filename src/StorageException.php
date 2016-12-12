@@ -5,10 +5,10 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
-class ImageStorageException extends \Exception
+class StorageException extends \Exception
 {
 
 }

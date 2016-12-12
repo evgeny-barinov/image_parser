@@ -5,11 +5,16 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
 class DefaultImage implements ImageInterface
 {
+    /**
+     * @var string
+     */
+    protected $uri;
+
     /**
      * @var string
      */
@@ -33,12 +38,14 @@ class DefaultImage implements ImageInterface
     /**
      * DefaultImage constructor.
      * @param string $name
+     * @param string $uri
      * @param string $content
      */
-    public function __construct($name, $content)
+    public function __construct($name, $uri, $content)
     {
         $this->originalName = $name;
         $this->name = $name;
+        $this->source = $uri;
         $this->content = $content;
         $this->setMime();
     }
@@ -61,6 +68,16 @@ class DefaultImage implements ImageInterface
     public function getMime()
     {
         return $this->mime;
+    }
+
+    public function getSize()
+    {
+        return strlen($this->content);
+    }
+
+    public function getUri()
+    {
+        return $this->uri;
     }
 
     protected function setMime()

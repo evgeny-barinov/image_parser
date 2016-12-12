@@ -13,28 +13,30 @@ if (empty($opts['s'])) {
     die(1);
 }
 
-
-$p = new \Barya\ImageParser(
+$p = new Barya\ImageParser\DefaultParser(
     new \GuzzleHttp\Client(),
-    new \Barya\StorageFileSystem(__DIR__ . DIRECTORY_SEPARATOR . 'images'),
-    new \Barya\MetaStorageMySql("mysql:dbname=parsertest;host=127.0.0.1", "root", "")
+    new \Barya\ImageParser\StorageFileSystem(__DIR__ . DIRECTORY_SEPARATOR . 'images'),
+    new \Barya\ImageParser\MetaStorageMySql(
+        new \PDO("mysql:dbname=parsertest;host=127.0.0.1", "root", "")
+    )
 );
 
-$p->addStorageFilter(function(\Barya\ImageInterface $image) {
+$p->addStorageFilter(function(\Barya\ImageParser\ImageInterface $image) {
     return $image->getMime() == 'image/jpeg';
 });
-$p->addStorageFilter(function(\Barya\ImageInterface $image) {
-    return $image->getContent() < 10 * 1024 * 1024;
+$p->addStorageFilter(function(\Barya\ImageParser\ImageInterface $image) {
+    return $image->getSize() < 10 * 1024 * 1024;
 });
 
-$p->setImageFilter(function (\GuzzleHttp\Psr7\Response $response, \GuzzleHttp\Psr7\Uri $baseUri) {
+$p->setImageFilter(function (\Psr\Http\Message\ResponseInterface $response, \Psr\Http\Message\UriInterface $baseUri) {
+    libxml_use_internal_errors(true);
     $doc = new DOMDocument();
 
     $images = [];
     if ($doc->loadHTML($response->getBody())) {
         $imgs = $doc->getElementsByTagName('img');
 
-        $defaultImageFactory = new \Barya\DefaultImageFactory();
+        $defaultImageFactory = new \Barya\ImageParser\DefaultImageFactory();
         /**
          * @var DOMElement $img
          */
@@ -49,7 +51,7 @@ $p->setImageFilter(function (\GuzzleHttp\Psr7\Response $response, \GuzzleHttp\Ps
     return $images;
 });
 
-$p->setPageFilter(function (\GuzzleHttp\Psr7\Response $response, \GuzzleHttp\Psr7\Uri $baseUri) {
+$p->setPageFilter(function (\Psr\Http\Message\ResponseInterface $response, \Psr\Http\Message\UriInterface $baseUri) {
     return [];
 });
 

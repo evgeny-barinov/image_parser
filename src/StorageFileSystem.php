@@ -5,10 +5,10 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
-class StorageFileSystem implements ImageStorageInterface
+class StorageFileSystem implements StorageInterface
 {
     /**
      * @var callable[]
@@ -20,6 +20,9 @@ class StorageFileSystem implements ImageStorageInterface
      */
     protected $images = [];
 
+    /**
+     * @var string
+     */
     protected $dir;
 
     public function __construct($dir = null)
@@ -60,11 +63,18 @@ class StorageFileSystem implements ImageStorageInterface
         }
 
         if (!@is_writable($this->dir)) {
-            throw new ImageStorageException('Directory is not writable');
+            throw new StorageException('Directory is not writable');
         }
 
         foreach ($this->images as $image) {
             @file_put_contents($this->dir . DIRECTORY_SEPARATOR . $image->getName(), $image->getContent());
+        }
+    }
+
+    public function saveMeta(MetaStorageInterface $metastorage)
+    {
+        foreach ($this->getAll() as $image) {
+            $metastorage->save($image);
         }
     }
 

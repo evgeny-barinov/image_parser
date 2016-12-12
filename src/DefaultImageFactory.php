@@ -5,26 +5,23 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Uri;
 
-class DefaultImageFactory
+class DefaultImageFactory implements ImageFactoryInterface
 {
-    public function create($path)
+    public function create($uri)
     {
-        if (empty($path)) {
+        if (empty($uri)) {
             return false;
         }
 
-        $uri = new Uri($path);
-        $client = new Client();
-
-        if ($content = (string) $client->request('GET', $uri)->getBody()) {
-            $path = explode('/', $uri->getPath());
-            return new DefaultImage(end($path), $content);
+        if ($content = (string) (new Client())->request('GET', $uri)->getBody()) {
+            $path_parts = explode('/', (new Uri($uri))->getPath());
+            return new DefaultImage(end($path_parts), $uri, $content);
         }
 
         return false;
