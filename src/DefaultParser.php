@@ -82,8 +82,10 @@ class DefaultParser
             $this->storage->saveMeta($this->metaStorage);
         } catch (StorageException $e) {
             //do something
+            $e->getMessage();
         } catch (\Exception $e) {
             //do something
+            $e->getMessage();
         }
 
         $pagesFilter = $this->pageFilter;
@@ -101,8 +103,11 @@ class DefaultParser
 
         while (!empty($pages)) {
             $page = array_pop($pages);
+            echo 'Parsing page: ' . $page, PHP_EOL;
             $pages = array_merge($pages, $this->parsePage($page));
         }
+
+        echo 'Done!', PHP_EOL;
     }
 
 }

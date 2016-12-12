@@ -44,8 +44,11 @@ class DefaultImage implements ImageInterface
     public function __construct($name, $uri, $content)
     {
         $this->originalName = $name;
-        $this->name = $name;
-        $this->source = $uri;
+
+        $nameParts = explode('.', $name);
+        $this->name = md5($name) . '.' . end($nameParts);
+
+        $this->uri = $uri;
         $this->content = $content;
         $this->setMime();
     }
