@@ -8,9 +8,13 @@
         "phpunit/phpunit": "~5"
     },
     "autoload": {
-        "psr-4": { "Barya\\": "src/" }
+        "psr-4": {
+            "Barya\\ImageParser\\": "src/"
+        }
     },
     "autoload-dev": {
-        "psr-4": { "Barya\\Tests\\": "tests/" }
+        "psr-4": {
+            "Barya\\ImageParser\\Tests\\": "tests/"
+        }
     }
 }
