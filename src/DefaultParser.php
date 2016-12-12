@@ -5,13 +5,14 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 
-class ImageParser
+
+class DefaultParser
 {
     /**
      * @var callable
@@ -24,19 +25,19 @@ class ImageParser
     private $pageFilter;
 
     /**
-     * @var ImageStorageInterface
+     * @var StorageInterface
      */
     private $storage;
 
     /**
-     * @var ImageMetaStorageInterface
+     * @var MetaStorageInterface
      */
     private $metaStorage;
 
     public function __construct(
         Client $client,
-        ImageStorageInterface $storage,
-        ImageMetaStorageInterface $metaStorage
+        StorageInterface $storage,
+        MetaStorageInterface $metaStorage
     )
     {
         $this->client = $client;
@@ -59,7 +60,11 @@ class ImageParser
         $this->pageFilter = $filter;
     }
 
-    public function parsePage(Uri $page)
+    /**
+     * @param UriInterface $page
+     * @return UriInterface[]
+     */
+    public function parsePage(UriInterface $page)
     {
         $response = $this->client->request('GET', $page);
         $filter = $this->imageFilter;
@@ -69,12 +74,17 @@ class ImageParser
          * @var ImageInterface $image
          */
         foreach ($images as $image) {
-            if ($id = $this->storage->add($image)) {
-
-            }
+            $this->storage->add($image);
         }
 
-        $this->storage->save();
+        try {
+            $this->storage->save();
+            $this->storage->saveMeta($this->metaStorage);
+        } catch (StorageException $e) {
+            //do something
+        } catch (\Exception $e) {
+            //do something
+        }
 
         $pagesFilter = $this->pageFilter;
         $pages = $pagesFilter($response, $page);
@@ -82,7 +92,10 @@ class ImageParser
         return $pages;
     }
 
-    public function parseSite(Uri $page)
+    /**
+     * @param UriInterface $page
+     */
+    public function parseSite(UriInterface $page)
     {
         $pages = [$page];
 

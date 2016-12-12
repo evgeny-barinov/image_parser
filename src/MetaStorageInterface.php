@@ -5,10 +5,10 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
-interface ImageMetaStorageInterface
+interface MetaStorageInterface
 {
     /**
      * @param ImageInterface $image
