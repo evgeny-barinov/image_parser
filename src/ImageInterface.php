@@ -5,7 +5,7 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 /**
  * Interface ImageInterface
@@ -32,4 +32,14 @@ interface ImageInterface
      * @return string
      */
     public function getMime();
+
+    /**
+     * @return integer
+     */
+    public function getSize();
+
+    /**
+     * @return string
+     */
+    public function getUri();
 }

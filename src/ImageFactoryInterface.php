@@ -5,10 +5,14 @@
  * @author Evgeniy Barinov <z.barinov@gmail.com>
  */
 
-namespace Barya;
+namespace Barya\ImageParser;
 
 
-interface ImageFactoryInteface
+interface ImageFactoryInterface
 {
-
+    /**
+     * @param string $uri abs url
+     * @return ImageInterface|false
+     */
+    public function create($uri);
 }
